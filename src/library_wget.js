@@ -16,7 +16,7 @@ var LibraryWget = {
     },
   },
 
-  emscripten_async_wget__deps: ['$PATH_FS', '$wget', '$callUserCallback', '$Browser', '$withStackSave'],
+  emscripten_async_wget__deps: ['$PATH_FS', '$wget', '$callUserCallback', '$Browser', '$withStackSave', '$allocateUTF8OnStack'],
   emscripten_async_wget__proxy: 'sync',
   emscripten_async_wget__sig: 'viiii',
   emscripten_async_wget: function(url, file, onload, onerror) {

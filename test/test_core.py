@@ -5726,7 +5726,7 @@ main( int argv, char ** argc ) {
     self.do_runf(test_file('utf32.cpp'), 'OK.', args=['-fshort-wchar'])
 
   def test_utf16(self):
-    self.set_setting('EXPORTED_RUNTIME_METHODS', ['writeAsciiToMemory'])
+    self.set_setting('EXPORTED_RUNTIME_METHODS', ['writeAsciiToMemory', 'UTF16ToString', 'stringToUTF16'])
     self.do_runf(test_file('core/test_utf16.cpp'), 'OK.')
 
   def test_utf8(self):
@@ -7622,6 +7622,7 @@ void* operator new(size_t size) {
     # TODO(): Remove once we make webidl output closure-warning free.
     self.ldflags.remove('-sCLOSURE_WARNINGS=error')
     self.set_setting('WASM_ASYNC_COMPILATION', 0)
+    self.set_setting('DEFAULT_LIBRARY_FUNCS_TO_INCLUDE', ['$intArrayFromString'])
     if self.maybe_closure():
       # avoid closure minified names competing with our test code in the global name space
       self.set_setting('MODULARIZE')
@@ -8025,6 +8026,7 @@ int main() {
     # check bad ccall use
     # needs to flush stdio streams
     self.set_setting('EXIT_RUNTIME')
+    self.set_setting('DEFAULT_LIBRARY_FUNCS_TO_INCLUDE', ['$ccall'])
     self.set_setting('ASYNCIFY')
     self.set_setting('ASSERTIONS')
     self.set_setting('INVOKE_RUN', 0)
@@ -8060,6 +8062,7 @@ Module['onRuntimeInitialized'] = function() {
     self.set_setting('ASYNCIFY')
     self.set_setting('ASSERTIONS')
     self.set_setting('INVOKE_RUN', 0)
+    self.set_setting('DEFAULT_LIBRARY_FUNCS_TO_INCLUDE', ['$ccall'])
     create_file('main.c', r'''
 #include <stdio.h>
 #include <emscripten.h>
@@ -8089,7 +8092,7 @@ Module['onRuntimeInitialized'] = function() {
     self.set_setting('INVOKE_RUN', 0)
     self.set_setting('EXIT_RUNTIME', exit_runtime)
     self.set_setting('EXPORTED_FUNCTIONS', ['_stringf', '_floatf'])
-    self.set_setting('DEFAULT_LIBRARY_FUNCS_TO_INCLUDE', ['$maybeExit'])
+    self.set_setting('DEFAULT_LIBRARY_FUNCS_TO_INCLUDE', ['$maybeExit', '$ccall'])
     create_file('main.c', r'''
 #include <stdio.h>
 #include <emscripten.h>
@@ -8507,6 +8510,7 @@ NODEFS is no longer included by default; build with -lnodefs.js
   def test_stack_overflow_check(self):
     self.set_setting('TOTAL_STACK', 1048576)
     self.set_setting('STACK_OVERFLOW_CHECK', 2)
+    self.set_setting('DEFAULT_LIBRARY_FUNCS_TO_INCLUDE', '$allocateUTF8OnStack')
     self.do_runf(test_file('stack_overflow.cpp'), 'Aborted(stack overflow', assert_returncode=NON_ZERO)
 
     self.emcc_args += ['-DONE_BIG_STRING']
@@ -8922,6 +8926,7 @@ NODEFS is no longer included by default; build with -lnodefs.js
     self.emcc_args.append('-fsanitize=address')
     self.set_setting('ALLOW_MEMORY_GROWTH')
     self.set_setting('INITIAL_MEMORY', '300mb')
+    self.set_setting('DEFAULT_LIBRARY_FUNCS_TO_INCLUDE', ['$allocateUTF8OnStack'])
     self.do_runf(test_file('core/test_asan_js_stack_op.c'),
                  expected_output='Hello, World!')
 
@@ -9470,6 +9475,7 @@ NODEFS is no longer included by default; build with -lnodefs.js
   def test_em_async_js(self):
     self.uses_es6 = True
     self.set_setting('ASYNCIFY')
+    self.set_setting('EXPORTED_RUNTIME_METHODS', 'ccall')
     self.maybe_closure()
     self.do_core_test('test_em_async_js.c')
 

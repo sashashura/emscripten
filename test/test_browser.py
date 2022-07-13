@@ -1339,12 +1339,14 @@ keydown(100);keyup(100); // trigger the end
     shutil.move('test.html', 'third.html')
 
   def test_fs_idbfs_sync(self):
+    self.set_setting('DEFAULT_LIBRARY_FUNCS_TO_INCLUDE', '$ccall')
     for extra in [[], ['-DEXTRA_WORK']]:
       secret = str(time.time())
       self.btest(test_file('fs/test_idbfs_sync.c'), '1', args=['-lidbfs.js', '-DFIRST', '-DSECRET=\"' + secret + '\"', '-sEXPORTED_FUNCTIONS=_main,_test,_success', '-lidbfs.js'])
       self.btest(test_file('fs/test_idbfs_sync.c'), '1', args=['-lidbfs.js', '-DSECRET=\"' + secret + '\"', '-sEXPORTED_FUNCTIONS=_main,_test,_success', '-lidbfs.js'] + extra)
 
   def test_fs_idbfs_sync_force_exit(self):
+    self.set_setting('DEFAULT_LIBRARY_FUNCS_TO_INCLUDE', '$ccall')
     secret = str(time.time())
     self.btest(test_file('fs/test_idbfs_sync.c'), '1', args=['-lidbfs.js', '-DFIRST', '-DSECRET=\"' + secret + '\"', '-sEXPORTED_FUNCTIONS=_main,_test,_success', '-sEXIT_RUNTIME', '-DFORCE_EXIT', '-lidbfs.js'])
     self.btest(test_file('fs/test_idbfs_sync.c'), '1', args=['-lidbfs.js', '-DSECRET=\"' + secret + '\"', '-sEXPORTED_FUNCTIONS=_main,_test,_success', '-sEXIT_RUNTIME', '-DFORCE_EXIT', '-lidbfs.js'])
@@ -1399,6 +1401,7 @@ keydown(100);keyup(100); // trigger the end
     self.btest(Path('fs/test_workerfs_package.cpp'), '1', args=['-lworkerfs.js', '--proxy-to-worker', '-lworkerfs.js'])
 
   def test_fs_lz4fs_package(self):
+    self.emcc_args += ['-sEXPORTED_RUNTIME_METHODS=ccall']
     # generate data
     ensure_dir('subdir')
     create_file('file1.txt', '0123456789' * (1024 * 128))
@@ -4329,6 +4332,7 @@ Module["preRun"].push(function () {
 
   @also_with_threads
   def test_TextDecoder(self):
+    self.set_setting('LEGACY_RUNTIME')
     self.btest('browser_test_hello_world.c', '0', args=['-sTEXTDECODER=0'])
     just_fallback = os.path.getsize('test.js')
     self.btest('browser_test_hello_world.c', '0')
