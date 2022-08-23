@@ -12288,7 +12288,7 @@ Module['postRun'] = function() {{
   # variant of the core test suite.
   @requires_v8
   def test_memory64(self):
-    self.v8_args += ['--experimental-wasm-memory64']
+    self.v8_args += ['--experimental-wasm-memory64', '-Wno-experimental']
     for opt in ['-O0', '-O1', '-O2', '-O3']:
       self.do_runf(test_file('hello_world.c'), 'hello, world', emcc_args=['-sMEMORY64', opt])
 
