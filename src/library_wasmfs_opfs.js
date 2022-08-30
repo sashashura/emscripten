@@ -271,10 +271,12 @@ mergeInto(LibraryManager.library, {
     // TODO: Does this API ever fail?
     try {
       await accessHandle.close();
+      throw new Error("Injected failure");
     } catch (e) {
-      err("Unexpected failure in wasmfs_opfs_close_access");
-      var eio = -{{{ cDefine('EIO') }}};
-      {{{ makeSetValue('errPtr', 0, 'eio', 'i32') }}};
+      throw e;
+      // err("Unexpected failure in wasmfs_opfs_close_access:", e.stack);
+      // var eio = -{{{ cDefine('EIO') }}};
+      // {{{ makeSetValue('errPtr', 0, 'eio', 'i32') }}};
     }
     wasmfsOPFSFree(wasmfsOPFSAccessHandles, accessID);
     _emscripten_proxy_finish(ctx);
