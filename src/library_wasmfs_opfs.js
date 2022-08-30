@@ -266,9 +266,16 @@ mergeInto(LibraryManager.library, {
 
   _wasmfs_opfs_close_access__deps: ['$wasmfsOPFSFree',
                                     '$wasmfsOPFSAccessHandles'],
-  _wasmfs_opfs_close_access: async function(ctx, accessID) {
+  _wasmfs_opfs_close_access: async function(ctx, accessID, errPtr) {
     let accessHandle = wasmfsOPFSAccessHandles.get(accessID);
-    await accessHandle.close();
+    // TODO: Does this API ever fail?
+    try {
+      await accessHandle.close();
+    } catch (e) {
+      err("Unexpected failure in wasmfs_opfs_close_access");
+      var eio = -{{{ cDefine('EIO') }}};
+      {{{ makeSetValue('errPtr', 0, 'eio', 'i32') }}};
+    }
     wasmfsOPFSFree(wasmfsOPFSAccessHandles, accessID);
     _emscripten_proxy_finish(ctx);
   },
